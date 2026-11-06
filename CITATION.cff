@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "Please cite the associated MSAF-UNet paper when using this research."
+title: "UNet-Camelyon: MSAF-UNet research project"
+type: software
+authors:
+  - family-names: Ye
+    given-names: Liqi
+repository-code: "https://github.com/Kisen7/UNet-Camelyon"
+url: "https://kisen7.github.io/UNet-Camelyon/"
+preferred-citation:
+  type: article
+  title: "MSAF-UNet: A Robust Segmentation Method Integrating Traditional Image Processing and Multi-Scale Attention Fusion"
+  authors:
+    - family-names: Ye
+      given-names: Liqi
+    - family-names: Zhang
+      given-names: Junyou
+    - family-names: Wang
+      given-names: Jing
+    - family-names: Xi
+      given-names: Qi
+    - family-names: Yao
+      given-names: Yandan
+  journal: "IEEE Signal Processing Letters"
+  year: 2025
+  volume: 32
+  start: 3415
+  end: 3419
+  doi: "10.1109/LSP.2025.3585818"

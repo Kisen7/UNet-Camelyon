@@ -1,500 +1,155 @@
-# 🏥 UNet-Camelyon: Medical Image Segmentation
+<div align="center">
 
-A deep learning project for semantic segmentation of Whole Slide Images (WSI) using U-Net architecture and the Camelyon16/17 dataset.
+# MSAF-UNet
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch 2.0+](https://img.shields.io/badge/pytorch-2.0+-red.svg)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+### Traditional image processing meets multi-scale attention fusion
 
----
+**Histopathology segmentation · CAMELYON16/17 · EBHI-Seg**
 
-## 📋 Table of Contents
+[Project page](https://kisen7.github.io/UNet-Camelyon/) · [Paper](https://doi.org/10.1109/LSP.2025.3585818) · [中文](README.zh-CN.md) · [Citation](#citation)
 
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [Pipeline](#pipeline)
-- [Skills (Optimizations)](#skills-optimizations)
-- [Visualization Results](#visualization-results) ⭐
-- [Configuration](#configuration)
-- [Usage Examples](#usage-examples)
-- [Performance](#performance)
+Liqi Ye · Junyou Zhang · Jing Wang · Qi Xi · Yandan Yao<br>
+*IEEE Signal Processing Letters*, vol. 32, pp. 3415–3419, 2025
+
+</div>
 
 ---
 
-## 🎯 Overview
+**UNet-Camelyon** brings together pathology-image segmentation code and the research presentation for **MSAF-UNet: A Robust Segmentation Method Integrating Traditional Image Processing and Multi-Scale Attention Fusion**.
 
-This project implements semantic segmentation for pathology images using U-Net, specifically designed for:
-- **Large-scale WSI processing** with sliding window approach
-- **Batch patch inference** with optimized performance
-- **Multiple evaluation metrics** (Accuracy, Dice, IoU, AUC)
-- **Heatmap visualization** of predictions
+[Method](#method) · [Published results](#published-results) · [Repository guide](#repository-guide) · [Getting started](#getting-started)
 
-**Dataset**: [Camelyon16/17](https://camelyon17.grand-challenge.org/Data/)
+## Method
 
----
+<p align="center"><a href="docs/assets/paper/architecture.png"><img src="docs/assets/paper/architecture.png" width="700" alt="Original Figure 1: MSAF-UNet architecture and multi-scale attention fusion module"></a></p>
 
-## ✨ Features
+*Figure 1 from the paper. Click the figure to view it at full size.*
 
-- ✅ U-Net architecture with skip connections
-- ✅ Batch training with mixed loss (BCE + Dice)
-- ✅ **5-6x faster inference** with optimizations (FP16 + JIT + batching)
-- ✅ ONNX model export for cross-platform deployment
-- ✅ Comprehensive evaluation metrics
-- ✅ Progress tracking with TensorBoard
-- ✅ Complete preprocessing pipeline
+| Component | Role in the paper |
+| --- | --- |
+| Texture and color enhancement | Laplacian edges and Otsu thresholding emphasize texture; K-means and median filtering emphasize color structure. |
+| Parallel feature extraction | 3 × 3 and 7 × 7 branches capture local detail and wider spatial context. |
+| Multi-scale attention fusion | Global attention and local spatial-pyramid features integrate complementary representations. |
+| Box prompts | Clustering and the Generalized Hough Transform generate spatial cues for the skip connections. |
 
----
+<details>
+<summary>Box-prompt examples · Figure 2</summary>
 
-## 🚀 Installation
+![Figure 2: original green box prompts and blue GHT ellipses](docs/assets/paper/box-prompts.png)
 
-### Prerequisites
-- Python 3.8+
-- CUDA 11.8+ (optional, for GPU acceleration)
+</details>
 
-### Setup
+## Published results
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/UNet-Camelyon.git
-   cd UNet-Camelyon
-   ```
+Results reported in **Table II, p. 3418** of the paper. EBHI-Seg measurements average the six categories described in the study.
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv .venv
+| Dataset | AUC | Accuracy | IoU | Dice |
+| --- | ---: | ---: | ---: | ---: |
+| CAMELYON16 | 0.914 | 0.945 | 0.693 | **0.808** |
+| CAMELYON17 | 0.873 | 0.932 | 0.639 | **0.751** |
+| EBHI-Seg | 0.922 | 0.910 | 0.881 | **0.925** |
 
-   # Activate (Windows)
-   .venv\Scripts\activate
+<p align="center"><img src="docs/assets/paper/patch-results.png" width="820" alt="Figure 3: original images, reference masks and segmentation heatmaps on CAMELYON16, CAMELYON17 and EBHI-Seg"></p>
 
-   # Activate (Linux/Mac)
-   source .venv/bin/activate
-   ```
+*Figure 3. Rows show CAMELYON16, CAMELYON17 and EBHI-Seg. Original image, mask and method labels are retained.*
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+<details>
+<summary>Whole-slide comparison · Figure 4</summary>
 
-   For detailed installation info, see [INSTALLATION_SUMMARY.md](INSTALLATION_SUMMARY.md)
+![Figure 4: whole-slide heatmaps for CAMELYON16 test slide 40](docs/assets/paper/wsi-results.png)
 
----
+</details>
 
-## 📦 Project Structure
+<details>
+<summary>Full comparison and ablation tables</summary>
 
-```
-UNet-Camelyon/
-├── README.md                          # This file
-├── requirements.txt                   # Dependencies
-├── INSTALLATION_SUMMARY.md            # Installation guide
-│
-├── 🎓 Core Models
-│   ├── UNet.py                       # U-Net architecture
-│   └── train.py                      # Training pipeline
-│
-├── 📊 Data Processing
-│   ├── utils/
-│   │   ├── read_data.py             # Data loading
-│   │   ├── evaluate.py              # Evaluation metrics
-│   │   └── Gen_SegData.ipynb        # Patch generation
-│   └── pre_patches.py               # Patch preprocessing
-│
-├── 🎯 Inference
-│   └── pre_WSI.py                   # Original WSI inference
-│
-├── ⚡ Skills (Optimizations)
-│   ├── skills/
-│   │   ├── inference_optimized.py              # Optimized inference engine
-│   │   ├── example_optimized_inference.py      # Usage examples
-│   │   ├── compare_inference_speed.py          # Benchmark tool
-│   │   └── INFERENCE_OPTIMIZATION_README.md    # Detailed docs
-│   └── skills/README.md                        # Skills overview
-│
-└── 📁 Camelyon16/ (Data)
-    ├── train/
-    │   ├── img/    # Training images
-    │   └── mask/   # Training masks
-    ├── val/
-    │   ├── img/    # Validation images
-    │   └── mask/   # Validation masks
-```
+![Table II: original model comparison](docs/assets/paper/comparison-table.png)
 
----
+![Table I: original ablation study](docs/assets/paper/ablation-table.png)
 
-## 🎬 Quick Start
+</details>
 
-### 1. Data Preparation
+Figures are cropped directly from the published paper, preserving their colors, labels and values. See [figure sources](docs/assets/paper/SOURCES.md).
+
+## Repository guide
+
+| File or directory | Entry point |
+| --- | --- |
+| [`UNet.py`](UNet.py) | PyTorch U-Net encoder, decoder and skip connections |
+| [`train.py`](train.py) | Training, BCE + Dice loss, validation and checkpoint saving |
+| [`pre_WSI.py`](pre_WSI.py) | Sliding-window whole-slide inference and heatmaps |
+| [`pre_patches.py`](pre_patches.py) | Patch inference and heatmap overlays |
+| [`utils/Gen_SegData.ipynb`](utils/Gen_SegData.ipynb) | Patch and mask preparation from WSI annotations |
+| [`utils/read_data.py`](utils/read_data.py) | Paired image/mask loading |
+| [`utils/evaluate.py`](utils/evaluate.py) | Segmentation evaluation utilities |
+| [`skills/`](skills/) | Batch inference, FP16/JIT options, ONNX export and examples |
+| [`modelArch_output/`](modelArch_output/) | Existing architecture notes and editable diagrams |
+| [`docs/`](docs/) | Bilingual research page and original paper figures |
+
+## Getting started
 
 ```bash
-# Execute patch generation from WSI
-jupyter notebook utils/Gen_SegData.ipynb
+git clone https://github.com/Kisen7/UNet-Camelyon.git
+cd UNet-Camelyon
+python -m venv .venv
 ```
 
-Expected output:
-- Training patches: 273 images
-- Validation patches: 118 images
-
-### 2. Train Model
+Activate `.venv` using `source .venv/bin/activate` on Linux/macOS or `.venv\Scripts\Activate.ps1` in Windows PowerShell, then install dependencies:
 
 ```bash
-# Train U-Net on your data
-python train.py
+python -m pip install -r requirements.txt
 ```
 
-**Configuration** (in `train.py`):
-- Batch size: 6
-- Epochs: 200
-- Optimizer: Adam
-- Loss: BCE + Dice
-- Device: CUDA:1 (adjust as needed)
+WSI reading uses OpenSlide and its native library. Training uses the `segmentation_models_pytorch.utils` API; select a compatible environment for these existing scripts.
 
-### 3. Inference
+### Data and training
 
-#### Option A: Original inference (slower)
-```bash
-python pre_WSI.py
-python pre_patches.py
-```
+Use [`utils/Gen_SegData.ipynb`](utils/Gen_SegData.ipynb) to prepare patches. The loader reads same-named PNG image/mask pairs under `/ho/data/Camelyon16/{train,val}/{img,mask}/`.
 
-#### Option B: Optimized inference (5-6x faster) ⭐
-```bash
-cd skills
-python example_optimized_inference.py
-```
+The scripts store paths and device choices in source. Review these settings for your machine and data before execution:
 
----
+| Script | Existing settings |
+| --- | --- |
+| `train.py` | Batch size 6; 200 epochs; Adam; BCE + Dice; `cuda:1` when CUDA is available, otherwise CPU; saves `UNet_17.pth` |
+| `utils/read_data.py` | Dataset root `/ho/data/`; same-named images and masks |
+| `pre_WSI.py` | Input `/Camelyon16/test_040.tif`; checkpoint `UNet.pth`; device `cuda:1` |
+| `pre_patches.py` | Input `patch_path/`; output `save_path/`; checkpoint `UNet.pth`; device `cuda:2` |
 
-## 🔄 Pipeline
-
-```
-Raw WSI + Annotations
-    ↓
-Gen_SegData.ipynb (Extract patches)
-    ↓
-Train/Val Patches
-    ↓
-train.py (Train U-Net)
-    ↓
-Trained Model (UNet_17.pth)
-    ↓
-pre_WSI.py / pre_patches.py (Inference)
-    ↓
-Heatmap Results
-```
-
----
-
-## ⚡ Skills (Optimizations)
-
-### Inference Optimization Skill
-
-**Location**: `skills/`
-
-This skill provides **5-6x faster inference** through:
-
-- 🔹 **Batch Processing** - Process 12 patches simultaneously
-- 🔹 **FP16 (Half Precision)** - 50% memory reduction + 2-3x speedup
-- 🔹 **TorchScript JIT** - Additional 20% speedup
-- 🔹 **ONNX Export** - Cross-platform deployment
-- 🔹 **Multi-threading** - Async data loading
-
-### Performance Comparison
-
-| Metric | Original | Optimized | Improvement |
-|--------|----------|-----------|-------------|
-| Speed | ~45ms/patch | ~8ms/patch | **5.6x** |
-| Memory | 2.5GB | 1.2GB | **-52%** |
-| GPU Util. | 35% | 92% | **+163%** |
-
-### Quick Usage
-
-```python
-from skills.inference_optimized import OptimizedInference
-
-# Initialize engine
-engine = OptimizedInference(
-    model_path='UNet_17.pth',
-    device='cuda:0',
-    use_fp16=True,    # Half precision
-    batch_size=12     # Adjust based on GPU memory
-)
-
-# Process WSI
-engine.process_wsi_batched(
-    wsi_path='test.tif',
-    output_path='result.png'
-)
-
-# Or process directory
-engine.process_patches_directory('input/', 'output/')
-```
-
-### Full Documentation
-
-See [skills/INFERENCE_OPTIMIZATION_README.md](skills/INFERENCE_OPTIMIZATION_README.md) for:
-- Detailed parameter tuning
-- Benchmark results
-- Troubleshooting guide
-- ONNX export instructions
-
-### Run Benchmark
-
-```bash
-cd skills
-python compare_inference_speed.py
-```
-
-This will compare original vs optimized speed and generate performance charts.
-
----
-
-## ⚙️ Configuration
-
-### Data Paths
-
-Update paths in your scripts to match your system:
-
-```python
-# utils/read_data.py
-DATASET_PATH = '/path/to/Camelyon16/'
-
-# train.py
-train_dir = '/path/to/Camelyon16/train/'
-val_dir = '/path/to/Camelyon16/val/'
-
-# pre_WSI.py
-wsi_path = '/path/to/Camelyon16/test_040.tif'
-```
-
-### Training Parameters
-
-Edit `train.py`:
-
-```python
-batch_size = 6           # Adjust based on GPU memory
-num_epochs = 200
-learning_rate = 1e-4
-device = 'cuda:1'        # Change GPU device if needed
-```
-
-### Device Configuration
-
-```python
-# Automatic GPU detection
-import torch
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
-# Or specify GPU explicitly
-device = torch.device('cuda:1')  # Use GPU 1
-
-# CPU only
-device = torch.device('cpu')
-```
-
----
-
-## 📊 Usage Examples
-
-### Example 1: Train from scratch
+Run training from the repository root:
 
 ```bash
 python train.py
 ```
 
-Outputs:
-- Model checkpoint: `UNet_17.pth`
-- Training logs: Console output with progress bar
+### Batch inference
 
-### Example 2: Optimized WSI inference
+The existing interface accepts an explicit checkpoint and device. From the repository root, after preparing the checkpoint and a directory of equally sized patches:
 
-```bash
-cd skills
-python example_optimized_inference.py
-```
-
-Customization:
 ```python
 from skills.inference_optimized import OptimizedInference
 
 engine = OptimizedInference(
-    model_path='UNet_17.pth',
-    device='cuda:0',
-    batch_size=16,      # Larger batch for faster GPU
-    use_fp16=True,      # Enable half precision
-    use_jit=True        # Enable JIT compilation
+    model_path="UNet_17.pth",
+    device="cpu",  # Select the appropriate CUDA device for GPU inference.
+    use_fp16=False,
+    use_jit=False,
+    batch_size=4,
 )
-
-# Process with overlap for smoother results
-engine.process_wsi_batched(
-    wsi_path='large_slide.tif',
-    patch_size=512,
-    overlap=64,         # Overlap between patches
-    output_path='result.png'
-)
+engine.process_patches_directory("patch_path/", "output_path/")
 ```
 
-### Example 3: Export to ONNX
+## Citation
 
-```python
-from skills.inference_optimized import OptimizedInference
-
-engine = OptimizedInference('UNet_17.pth')
-engine.export_to_onnx('model.onnx')
-
-# Use in other frameworks
-import onnxruntime as ort
-session = ort.InferenceSession('model.onnx')
+```bibtex
+@article{Ye2025MSAFUNet,
+  author = {Ye, Liqi and Zhang, Junyou and Wang, Jing and Xi, Qi and Yao, Yandan},
+  title = {{MSAF-UNet}: A Robust Segmentation Method Integrating Traditional Image Processing and Multi-Scale Attention Fusion},
+  journal = {IEEE Signal Processing Letters},
+  year = {2025},
+  volume = {32},
+  pages = {3415--3419},
+  doi = {10.1109/LSP.2025.3585818}
+}
 ```
 
-### Example 4: Benchmark performance
-
-```bash
-cd skills
-python compare_inference_speed.py
-```
-
-Output:
-- Speed comparison chart
-- Detailed statistics
-- Time estimation for large datasets
-
----
-
-## 🖼️ Visualization Results
-
-The model generates heatmap predictions overlaid on original images:
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/90a7b38a-9ee3-4cd7-b493-200268dd7a1a" width="450" height="300" alt="Patch Prediction Example">
-  <img src="https://github.com/user-attachments/assets/e7ef4292-6b87-463e-a958-a3a9b7bfa649" width="550" height="300" alt="WSI Prediction Example">
-</p>
-
-**Left**: Patch-level prediction with heatmap overlay
-**Right**: Whole Slide Image (WSI) prediction result
-
-The heatmap uses a rainbow color scheme where:
-- 🔴 **Red/Warm colors** - High confidence predictions (positive regions)
-- 🔵 **Blue/Cool colors** - Low confidence predictions (negative regions)
-
----
-
-## 📈 Performance
-
-### Model Architecture
-
-| Component | Channels |
-|-----------|----------|
-| Input | 3 (RGB) |
-| Encoder | 64→128→256→512 |
-| Bottleneck | 1024 |
-| Decoder | 512→256→128→64 |
-| Output | 3 (Sigmoid) |
-| Parameters | ~25M |
-
-### Inference Speed
-
-**Original Method** (`pre_WSI.py`):
-- Speed: 2-3 patches/second
-- WSI (100k×150k): ~8 hours
-
-**Optimized Method** (`skills/inference_optimized.py`):
-- Speed: 14-15 patches/second
-- WSI (100k×150k): ~1.1 hours
-- **Speedup: 7x** ⚡
-
-### Evaluation Metrics
-
-Computed on validation set:
-- **Accuracy**: Pixel-wise classification accuracy
-- **Dice Coefficient**: Overlap-based metric
-- **IoU**: Intersection over Union
-- **AUC**: Area Under Curve
-
----
-
-## 🛠️ Troubleshooting
-
-### GPU Memory Issues
-
-```python
-# Reduce batch size
-engine = OptimizedInference(batch_size=4)
-
-# Or disable FP16
-engine = OptimizedInference(use_fp16=False)
-
-# Or reduce patch size
-engine.process_wsi_batched(patch_size=256)
-```
-
-### PyTorch DLL Error (Windows)
-
-Install Visual C++ Runtime:
-https://support.microsoft.com/en-us/help/2977003
-
-### OpenSlide Error
-
-Install OpenSlide library:
-- **Windows**: https://openslide.org/download/#windows
-- **Linux**: `sudo apt-get install libopenslide0`
-- **Mac**: `brew install openslide`
-
-### CUDA Out of Memory
-
-```bash
-# Check available memory
-nvidia-smi
-
-# Monitor during inference
-watch -n 1 nvidia-smi
-```
-
----
-
-## 📚 References
-
-- **U-Net Paper**: [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597)
-- **Camelyon Dataset**: https://camelyon17.grand-challenge.org/
-- **PyTorch**: https://pytorch.org/
-- **OpenSlide**: https://openslide.org/
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see LICENSE file for details.
-
----
-
-## 👤 Author
-
-Created for medical image segmentation research and clinical applications.
-
-**Last Updated**: 2026-02-11
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-## ⭐ Acknowledgments
-
-- Original U-Net implementation
-- Camelyon16/17 organizers
-- PyTorch community
-
----
-
-## 📞 Support
-
-For issues, questions, or suggestions, please open an issue on GitHub.
-
-**Quick Help**:
-- Installation: See [INSTALLATION_SUMMARY.md](INSTALLATION_SUMMARY.md)
-- Optimization: See [skills/INFERENCE_OPTIMIZATION_README.md](skills/INFERENCE_OPTIMIZATION_README.md)
-- Data prep: See `utils/Gen_SegData.ipynb`
+Source history: [apple2pig/UNet-Camelyon](https://github.com/apple2pig/UNet-Camelyon), currently redirected to `aplish064/UNet-Camelyon`. Original code and research utilities are preserved in this project.

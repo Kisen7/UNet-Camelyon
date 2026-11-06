@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MSAF-UNet research: traditional image processing, multi-scale attention fusion and histopathology segmentation. IEEE Signal Processing Letters, 2025.">
+  <meta property="og:title" content="MSAF-UNet · UNet-Camelyon">
+  <meta property="og:description" content="Explore the architecture, original paper figures and segmentation results.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kisen7.github.io/UNet-Camelyon/">
+  <meta property="og:image" content="https://kisen7.github.io/UNet-Camelyon/assets/paper/patch-results.png">
+  <meta name="theme-color" content="#ffffff">
+  <title>MSAF-UNet · UNet-Camelyon</title>
+  <link rel="canonical" href="https://kisen7.github.io/UNet-Camelyon/">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a href="#main" class="skip">Skip to content</a>
+<header class="wrap"><nav class="nav" aria-label="Main navigation">
+  <a class="brand" href="#main"><span class="monogram">MU</span>UNet-Camelyon</a>
+  <div class="navlinks"><a href="#framework"><span data-en="Method" data-zh="研究方法">Method</span></a><a href="#results"><span data-en="Results" data-zh="实验结果">Results</span></a><a href="#resources"><span data-en="Code" data-zh="代码">Code</span></a><a href="#publication"><span data-en="Paper" data-zh="论文">Paper</span></a></div>
+  <button id="language" class="lang" aria-label="Switch to Chinese">中文</button>
+  <a class="github" href="https://github.com/Kisen7/UNet-Camelyon">GitHub ↗</a>
+</nav></header>
+<main class="wrap" id="main">
+  <div class="hero"><div class="hero-copy">
+    <div class="eyebrow">IEEE SIGNAL PROCESSING LETTERS · 2025</div>
+    <h1>MSAF-UNet<span class="hero-subtitle"><span data-en="Traditional image processing.&lt;br&gt;Multi-scale attention fusion." data-zh="传统图像处理。&lt;br&gt;多尺度注意力融合。">Traditional image processing.<br>Multi-scale attention fusion.</span></span></h1>
+    <p class="lead"><span data-en="A segmentation framework that brings texture, color and spatial cues together for whole-slide pathology images." data-zh="融合纹理、颜色与空间提示信息，面向病理全切片图像的分割框架。">A segmentation framework that brings texture, color and spatial cues together for whole-slide pathology images.</span></p>
+    <p class="authors">Liqi Ye · Junyou Zhang · Jing Wang · Qi Xi · Yandan Yao<br>South China Normal University · Sun Yat-sen Memorial Hospital, Sun Yat-sen University</p>
+    <div class="actions"><a class="button" href="https://doi.org/10.1109/LSP.2025.3585818"><span data-en="Read the paper" data-zh="阅读论文">Read the paper</span> ↗</a><a class="button light" href="https://github.com/Kisen7/UNet-Camelyon"><span data-en="Explore the code" data-zh="查看项目代码">Explore the code</span> ↗</a><a class="button light" href="#results"><span data-en="View results" data-zh="查看实验结果">View results</span> ↓</a></div>
+    </div><div class="hero-preview"><figure class="figure">
+      <a class="figure-image" href="assets/paper/patch-results.png" data-zoom data-caption="From tissue to segmentation · Figure 3" aria-label="Enlarge From tissue to segmentation · Figure 3"><img src="assets/paper/patch-results.png" alt="From tissue to segmentation · Figure 3" fetchpriority="high"></a>
+      <figcaption class="figcap"><strong><span data-en="From tissue to segmentation · Figure 3" data-zh="从组织图像到分割结果 · 图 3">From tissue to segmentation · Figure 3</span></strong><a class="view-link" href="assets/paper/patch-results.png" data-zoom data-caption="From tissue to segmentation · Figure 3"><span data-en="View original ↗" data-zh="查看原图 ↗">View original ↗</span></a></figcaption>
+    </figure></div>
+  </div>
+  <div class="meta-strip">
+    <div class="meta"><span data-en="RESEARCH AREA" data-zh="研究领域">RESEARCH AREA</span><strong><span data-en="Computational pathology" data-zh="计算病理">Computational pathology</span></strong></div>
+    <div class="meta"><span data-en="ARCHITECTURE" data-zh="研究架构">ARCHITECTURE</span><strong>MSAF + U-shaped network</strong></div>
+    <div class="meta"><span data-en="EVALUATION" data-zh="评估数据集">EVALUATION</span><strong>CAMELYON16 / 17 · EBHI-Seg</strong></div>
+    <div class="meta"><span data-en="PUBLICATION" data-zh="发表信息">PUBLICATION</span><strong>Vol. 32 · 3415–3419</strong></div>
+  </div>
+  <section id="framework">
+    <div class="section-head"><div><div class="section-no">01 / METHOD</div><h2><span data-en="Local detail. Global context." data-zh="局部细节，全局信息。">Local detail. Global context.</span></h2></div><p><span data-en="The paper combines image enhancement, parallel receptive fields and attention-based feature fusion." data-zh="论文将图像增强、不同感受野分支与注意力特征融合结合起来。">The paper combines image enhancement, parallel receptive fields and attention-based feature fusion.</span></p></div>
+    <div class="framework-layout">
+      <figure class="figure">
+      <a class="figure-image" href="assets/paper/architecture.png" data-zoom data-caption="Figure 1 · MSAF-UNet architecture" aria-label="Enlarge Figure 1 · MSAF-UNet architecture"><img src="assets/paper/architecture.png" alt="Figure 1 · MSAF-UNet architecture" fetchpriority="high"></a>
+      <figcaption class="figcap"><strong><span data-en="Figure 1 · MSAF-UNet architecture" data-zh="图 1 · MSAF-UNet 网络结构">Figure 1 · MSAF-UNet architecture</span></strong><a class="view-link" href="assets/paper/architecture.png" data-zoom data-caption="Figure 1 · MSAF-UNet architecture"><span data-en="View original ↗" data-zh="查看原图 ↗">View original ↗</span></a></figcaption>
+    </figure>
+      <div class="method-stack">
+        <article><span class="step">01</span><h3><span data-en="Enhance texture &amp; color" data-zh="增强纹理与颜色">Enhance texture & color</span></h3><p><span data-en="Laplacian edge detection and Otsu thresholding highlight texture. K-means clustering and median filtering emphasize color structure." data-zh="Laplacian 边缘检测与 Otsu 阈值处理突出纹理，K-means 聚类与中值滤波增强颜色结构。">Laplacian edge detection and Otsu thresholding highlight texture. K-means clustering and median filtering emphasize color structure.</span></p></article>
+        <article><span class="step">02</span><h3><span data-en="Fuse across receptive fields" data-zh="融合不同感受野">Fuse across receptive fields</span></h3><p><span data-en="Parallel 3 × 3 and 7 × 7 branches capture fine detail and wider structure. MSAF combines global attention with local multi-scale features." data-zh="并行的 3 × 3 与 7 × 7 分支提取精细特征和更大范围的结构；MSAF 融合全局注意力与局部多尺度信息。">Parallel 3 × 3 and 7 × 7 branches capture fine detail and wider structure. MSAF combines global attention with local multi-scale features.</span></p></article>
+        <article><span class="step">03</span><h3><span data-en="Guide segmentation with box prompts" data-zh="通过框提示引导分割">Guide segmentation with box prompts</span></h3><p><span data-en="The optional proposal module uses clustering and a Generalized Hough Transform to derive spatial prompts for the skip connections." data-zh="可选的候选区域生成模块通过聚类与广义霍夫变换获得空间提示，并将其融入跳跃连接。">The optional proposal module uses clustering and a Generalized Hough Transform to derive spatial prompts for the skip connections.</span></p></article>
+      </div>
+    </div>
+    <details class="paper-details"><summary><span data-en="Explore the original box-prompt examples · Figure 2" data-zh="查看论文框提示示例 · 图 2">Explore the original box-prompt examples · Figure 2</span></summary>
+      <figure class="figure">
+      <a class="figure-image" href="assets/paper/box-prompts.png" data-zoom data-caption="Figure 2 · Box prompts: green boxes and blue GHT ellipses" aria-label="Enlarge Figure 2 · Box prompts: green boxes and blue GHT ellipses"><img src="assets/paper/box-prompts.png" alt="Figure 2 · Box prompts: green boxes and blue GHT ellipses" loading="lazy"></a>
+      <figcaption class="figcap"><strong><span data-en="Figure 2 · Box prompts: green boxes and blue GHT ellipses" data-zh="图 2 · 框提示：绿色矩形框与蓝色 GHT 椭圆">Figure 2 · Box prompts: green boxes and blue GHT ellipses</span></strong><a class="view-link" href="assets/paper/box-prompts.png" data-zoom data-caption="Figure 2 · Box prompts: green boxes and blue GHT ellipses"><span data-en="View original ↗" data-zh="查看原图 ↗">View original ↗</span></a></figcaption>
+    </figure>
+    </details>
+  </section>
+  <section id="results">
+    <div class="section-head"><div><div class="section-no">02 / RESULTS</div><h2><span data-en="Segmentation, from patch to slide." data-zh="从图像块到全切片。">Segmentation, from patch to slide.</span></h2></div><p><span data-en="Original qualitative results and quantitative measurements from the published paper." data-zh="展示已发表论文中的原始可视化结果与定量指标。">Original qualitative results and quantitative measurements from the published paper.</span></p></div>
+    <div class="tabs" role="tablist" aria-label="Result figures">
+      <button id="patch-tab" class="tab" role="tab" data-figure="0" aria-selected="true" aria-controls="result-panel"><span data-en="Patch segmentation" data-zh="图像块分割">Patch segmentation</span></button>
+      <button id="slide-tab" class="tab" role="tab" data-figure="1" aria-selected="false" aria-controls="result-panel" tabindex="-1"><span data-en="Whole-slide heatmaps" data-zh="全切片热图">Whole-slide heatmaps</span></button>
+    </div>
+    <div id="result-panel" role="tabpanel" aria-labelledby="patch-tab">
+      <figure class="figure result-figure"><a id="result-zoom" class="figure-image" href="assets/paper/patch-results.png" data-zoom data-caption="Figure 3 · Patch-level segmentation"><img id="result-image" src="assets/paper/patch-results.png" alt="Figure 3 · Patch-level segmentation" loading="lazy"></a><figcaption class="figcap"><strong id="result-caption">Figure 3 · Patch-level segmentation</strong><span><span data-en="Click the figure to enlarge ↗" data-zh="点击图片放大 ↗">Click the figure to enlarge ↗</span></span></figcaption></figure>
+      <p id="result-description" class="results-description">Rows show CAMELYON16, CAMELYON17 and EBHI-Seg, respectively. The original columns compare the image, reference mask and prediction heatmaps; red indicates a higher target-region probability.</p>
+    </div>
+    <div class="result-stats">
+      <div class="result-stat"><strong>0.808</strong><span>CAMELYON16 · Dice</span></div>
+      <div class="result-stat"><strong>0.751</strong><span>CAMELYON17 · Dice</span></div>
+      <div class="result-stat"><strong>0.925</strong><span>EBHI-Seg · Dice</span></div>
+    </div>
+    <p class="source-note"><span data-en="Reported for MSAF-UNet in Table II, p. 3418. EBHI-Seg values are averaged across the six categories described in the paper." data-zh="数据来自论文第 3418 页表 II 的 MSAF-UNet 结果；EBHI-Seg 指标为论文所述六类结果的平均值。">Reported for MSAF-UNet in Table II, p. 3418. EBHI-Seg values are averaged across the six categories described in the paper.</span></p>
+    <div class="table-scroll"><table class="metrics"><caption><span data-en="MSAF-UNet · Published results (Table II)" data-zh="MSAF-UNet · 论文结果（表 II）">MSAF-UNet · Published results (Table II)</span></caption><thead><tr><th scope="col">Dataset</th><th scope="col">AUC</th><th scope="col">Accuracy</th><th scope="col">IoU</th><th scope="col">Dice</th></tr></thead><tbody><tr><th scope="row">CAMELYON16</th><td>0.914</td><td>0.945</td><td>0.693</td><td>0.808</td></tr><tr><th scope="row">CAMELYON17</th><td>0.873</td><td>0.932</td><td>0.639</td><td>0.751</td></tr><tr><th scope="row">EBHI-Seg</th><td>0.922</td><td>0.910</td><td>0.881</td><td>0.925</td></tr></tbody></table></div>
+    <details class="paper-details"><summary><span data-en="Full comparison and ablation tables" data-zh="完整模型对比与消融表格">Full comparison and ablation tables</span></summary>
+      <figure class="figure">
+      <a class="figure-image" href="assets/paper/comparison-table.png" data-zoom data-caption="Table II · Comparison with other segmentation methods" aria-label="Enlarge Table II · Comparison with other segmentation methods"><img src="assets/paper/comparison-table.png" alt="Table II · Comparison with other segmentation methods" loading="lazy"></a>
+      <figcaption class="figcap"><strong><span data-en="Table II · Comparison with other segmentation methods" data-zh="表 II · 不同分割方法的实验对比">Table II · Comparison with other segmentation methods</span></strong><a class="view-link" href="assets/paper/comparison-table.png" data-zoom data-caption="Table II · Comparison with other segmentation methods"><span data-en="View original ↗" data-zh="查看原图 ↗">View original ↗</span></a></figcaption>
+    </figure>
+      <figure class="figure">
+      <a class="figure-image" href="assets/paper/ablation-table.png" data-zoom data-caption="Table I · Ablation of MSAF, preprocessing and box prompts" aria-label="Enlarge Table I · Ablation of MSAF, preprocessing and box prompts"><img src="assets/paper/ablation-table.png" alt="Table I · Ablation of MSAF, preprocessing and box prompts" loading="lazy"></a>
+      <figcaption class="figcap"><strong><span data-en="Table I · Ablation of MSAF, preprocessing and box prompts" data-zh="表 I · MSAF、预处理与框提示的消融实验">Table I · Ablation of MSAF, preprocessing and box prompts</span></strong><a class="view-link" href="assets/paper/ablation-table.png" data-zoom data-caption="Table I · Ablation of MSAF, preprocessing and box prompts"><span data-en="View original ↗" data-zh="查看原图 ↗">View original ↗</span></a></figcaption>
+    </figure>
+    </details>
+  </section>
+  <section id="resources">
+    <div class="section-head"><div><div class="section-no">03 / CODE & MATERIALS</div><h2><span data-en="Inside the repository." data-zh="浏览项目文件。">Inside the repository.</span></h2></div><p><span data-en="Direct entry points to the model, training pipeline and pathology-image utilities." data-zh="直接访问模型、训练流程和病理图像处理工具。">Direct entry points to the model, training pipeline and pathology-image utilities.</span></p></div>
+    <div class="resources">
+      <a class="resource" href="https://github.com/Kisen7/UNet-Camelyon/blob/main/UNet.py"><span class="resource-mark">01</span><div><h3><span data-en="U-Net model" data-zh="U-Net 模型">U-Net model</span> ↗</h3><p><span data-en="Encoder–decoder network and skip connections in PyTorch." data-zh="PyTorch 编码器、解码器与跳跃连接。">Encoder–decoder network and skip connections in PyTorch.</span></p><small>UNet.py</small></div></a>
+      <a class="resource" href="https://github.com/Kisen7/UNet-Camelyon/blob/main/train.py"><span class="resource-mark">02</span><div><h3><span data-en="Training" data-zh="模型训练">Training</span> ↗</h3><p><span data-en="Training loop, loss functions and checkpoint saving." data-zh="训练循环、损失函数与检查点保存。">Training loop, loss functions and checkpoint saving.</span></p><small>train.py</small></div></a>
+      <a class="resource" href="https://github.com/Kisen7/UNet-Camelyon/blob/main/pre_WSI.py"><span class="resource-mark">03</span><div><h3><span data-en="Whole-slide inference" data-zh="全切片推理">Whole-slide inference</span> ↗</h3><p><span data-en="Sliding-window processing and slide-level heatmaps." data-zh="滑动窗口处理与全切片热图。">Sliding-window processing and slide-level heatmaps.</span></p><small>pre_WSI.py · pre_patches.py</small></div></a>
+      <a class="resource" href="https://github.com/Kisen7/UNet-Camelyon/tree/main/utils"><span class="resource-mark">04</span><div><h3><span data-en="Data &amp; evaluation" data-zh="数据处理与评估">Data & evaluation</span> ↗</h3><p><span data-en="Patch generation notebook, data loading and evaluation utilities." data-zh="图像块生成笔记本、数据读取及评估工具。">Patch generation notebook, data loading and evaluation utilities.</span></p><small>utils/</small></div></a>
+    </div>
+    <p class="source-note"><span data-en="Repository setup and usage:" data-zh="环境配置与使用说明：">Repository setup and usage:</span> <a class="plain-link" href="https://github.com/Kisen7/UNet-Camelyon#getting-started">English</a> · <a class="plain-link" href="https://github.com/Kisen7/UNet-Camelyon/blob/main/README.zh-CN.md">中文</a></p>
+  </section>
+  <section id="publication">
+    <div class="section-head"><div><div class="section-no">04 / PUBLICATION</div><h2><span data-en="Read &amp; cite the paper." data-zh="阅读与引用。">Read & cite the paper.</span></h2></div><p><span data-en="IEEE Signal Processing Letters · Volume 32 · 2025" data-zh="IEEE Signal Processing Letters · 第 32 卷 · 2025 年">IEEE Signal Processing Letters · Volume 32 · 2025</span></p></div>
+    <div class="paper-list"><a class="paper" href="https://doi.org/10.1109/LSP.2025.3585818"><div class="venue"><b>2025</b>IEEE SPL</div><div><h3>MSAF-UNet: A Robust Segmentation Method Integrating Traditional Image Processing and Multi-Scale Attention Fusion</h3><p>Liqi Ye, Junyou Zhang, Jing Wang, Qi Xi, Yandan Yao · pp. 3415–3419</p><div class="doi">DOI: 10.1109/LSP.2025.3585818</div></div><span class="arrow">↗</span></a></div>
+    <div class="citation"><div class="citation-top"><span>BIBTEX</span><button id="copy-citation" class="copy"><span data-en="Copy citation" data-zh="复制引用">Copy citation</span></button></div><pre id="bibtex">@article{Ye2025MSAFUNet,
+  author = {Ye, Liqi and Zhang, Junyou and Wang, Jing and Xi, Qi and Yao, Yandan},
+  title = {{MSAF-UNet}: A Robust Segmentation Method Integrating Traditional Image Processing and Multi-Scale Attention Fusion},
+  journal = {IEEE Signal Processing Letters},
+  year = {2025},
+  volume = {32},
+  pages = {3415--3419},
+  doi = {10.1109/LSP.2025.3585818}
+}</pre></div>
+  </section>
+</main>
+<footer class="wrap"><span>KISEN7 / UNET-CAMELYON</span><span><span data-en="Original figures: Ye et al., IEEE SPL, 2025." data-zh="原图：Ye 等，IEEE SPL，2025。">Original figures: Ye et al., IEEE SPL, 2025.</span></span><a href="#main"><span data-en="Back to top" data-zh="返回顶部">Back to top</span> ↑</a></footer>
+<dialog id="figure-dialog" aria-label="Full-size paper figure"><div class="dialog-top"><span id="dialog-caption"></span><button id="dialog-close" class="dialog-close" aria-label="Close figure">×</button></div><img id="dialog-image" alt=""></dialog>
+<div id="toast" role="status" aria-live="polite" class="toast"></div>
+<script>window.PAPER_FIGURES = [{"src": "assets/paper/patch-results.png", "en": "Figure 3 · Patch-level segmentation", "zh": "图 3 · 图像块分割结果", "enDescription": "Rows show CAMELYON16, CAMELYON17 and EBHI-Seg, respectively. The original columns compare the image, reference mask and prediction heatmaps; red indicates a higher target-region probability.", "zhDescription": "三行依次来自 CAMELYON16、CAMELYON17 和 EBHI-Seg。原图依次呈现输入图像、标注掩膜及预测热图；红色表示目标区域的预测概率较高。"}, {"src": "assets/paper/wsi-results.png", "en": "Figure 4 · Whole-slide comparison", "zh": "图 4 · 全切片热图对比", "enDescription": "Whole-slide examples from test slide 40 of CAMELYON16, comparing the heatmaps produced by the methods under the same experimental conditions.", "zhDescription": "CAMELYON16 测试集第 40 号切片的全切片示例，展示论文在相同实验条件下获得的不同方法热图。"}];</script>
+<script src="assets/site.js"></script>
+</body>
+</html>
